@@ -12,8 +12,9 @@ import os
 __author__ = 'Matt Casari'
 
 # Use Semantic Versioning, http://semver.org
-version_info = (0,1,0)
-__version__ = '%d.%d.%d' % version_info
+from ._version import get_versions
+__version__ = get_version()['version']
+del get_version
 
 def _setup_log():
     
