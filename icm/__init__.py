@@ -12,11 +12,12 @@ import os
 __author__ = 'Matt Casari'
 
 # Use Semantic Versioning, http://semver.org
-from ._version import get_versions
-__version__ = get_version()['version']
+from ._version import get_version
+__version__ = get_version()
+VERSION = __version__
 del get_version
 
-def _setup_log():
-    
-    from icm import _debug
-    logger = logging.getLogger('usb')
+#def _setup_log():
+#    
+#    from icm import _debug
+#    logger = logging.getLogger('usb')
