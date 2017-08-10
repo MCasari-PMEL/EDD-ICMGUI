@@ -53,15 +53,17 @@ class MainWindow(QtGui.QMainWindow):
         
         self.headerDock = Dock("Description",size=(200,5))
         self.plotDock = Dock("Plot",size=(900,300))
-        self.paramDock = Dock("Parameters",size=(200,200))
+        self.sParamDock = Dock("System Parameters",size=(200,200))
+        self.dParamDock = Dock("Device Parameters",size=(200,200))
         self.fileDock = Dock("Create File",size=(60,25))
         self.serialDock = Dock("Serial Port",size=(60,25))
         self.meatballDock = Dock("PMEL Logo",size=(60,25))
 
         self.area.addDock(self.headerDock,'top')
         self.area.addDock(self.plotDock,'bottom',self.headerDock)
-        self.area.addDock(self.paramDock,'right',self.plotDock)
-        self.area.addDock(self.fileDock,'right',self.paramDock)
+        self.area.addDock(self.dParamDock,'right',self.plotDock)
+        self.area.addDock(self.sParamDock,'above',self.dParamDock)
+        self.area.addDock(self.fileDock,'right',self.sParamDock)
         self.area.addDock(self.serialDock,'bottom',self.fileDock)
         self.area.addDock(self.meatballDock,'bottom',self.serialDock)
         
@@ -89,10 +91,13 @@ class MainWindow(QtGui.QMainWindow):
         ## Add Device and System Parameters Widget
         self.dParams = ICMParams()
         self.sParams = ICMParams()
-        paramTabs = QTabWidget()
-        paramTabs.addTab(self.sParams,'Load Parameters')
-        paramTabs.addTab(self.dParams,'Device Parameters')
-        self.paramDock.addWidget(paramTabs)
+        
+        self.sParamDock.addWidget(self.sParams)
+        self.dParamDock.addWidget(self.dParams)
+        #paramTabs = QTabWidget()
+        #paramTabs.addTab(self.sParams,'Load Parameters')
+        #paramTabs.addTab(self.dParams,'Device Parameters')
+        #self.paramDock.addWidget(paramTabs)
         
         
         ## Add Serial Port Widget
