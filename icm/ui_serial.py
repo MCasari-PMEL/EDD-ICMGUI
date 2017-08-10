@@ -24,7 +24,12 @@ class SerialPort(QDialog):
         self.setWindowTitle("ICM Serial Port")
         
     def _create_buttons(self):
+        
+#        connectButton = QAbstractButton('Connect')
+#        disconnectButton = QAbstractButton('Disconnect')
+
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Open | QDialogButtonBox.Close)
+#        self.buttonBox = QDialogButtonBox(connectButton | disconnectButton)
         self.buttonBox.accepted.connect(self._connect_to_port)
         self.buttonBox.rejected.connect(self._disconnect_from_port)
  
@@ -144,4 +149,4 @@ class SerialPort(QDialog):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     dialog = SerialPort()
-sys.exit(dialog.exec_())
+    sys.exit(dialog.exec_())

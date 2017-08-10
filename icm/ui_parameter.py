@@ -11,137 +11,139 @@ import pyqtgraph.parametertree.parameterTypes as pTypes
 from pyqtgraph.parametertree import Parameter, ParameterTree, ParameterItem, registerParameterType
 from pyqtgraph import GraphicsLayoutWidget
 
+from ICM_parameters import *
 import pyqtgraph as pg
 import sys, os, glob
  
 
-master_params = [
-    {'name': 'MASTER','type':'group','children': [
-        ##{'name':'System','type':'list','values':['Master','COM1','COM2','COM3'],'value':0},
-        {'name':'PMEL Serial Number','type':'str','value':'XXXXXXXXXX'},
-        {'name':'Firmware Version','type':'str','value':'XXXXXXXXXX'}
-        ]} ]
-
-
-com_params = [   {'name':'Name','type':'str','value':'NAME'},
-                {'name':'Prefix','type':'str','value':'PREFIX'},
-                {'name':'Serial Port','type':'str','value':'XXXX'},
-                {'name':'Baud Rate','type':'list','values':['1200','2400','4800','9600','19200','28800','57600','115200'],'value':'9600'},
-                {'name':'Warmup Time','type':'int','value':12000},
-                {'name':'Sample Start Time','type':'str','value':'00:00:00'},
-                {'name':'Sample Interval','type':'str','value':'00:00:00'},
-                {'name':'Sample Period','type':'str','value':'00:00:00'},
-                {'name':'Sample Rate','type':'int','value':1},
-                {'name':'Power Switch','type':'int','value':1},
-                {'name':'Command','type':'str','value':'0'},
-                {'name':'cmd','type':'str','value':""},
-                {'name':'header','type':'str','value':'$'},
-                {'name':'format','type':'str','value':''},
-                {'name':'column[0]','type':'str','value':''},
-                {'name':'column[1]','type':'str','value':''},
-                {'name':'column[2]','type':'str','value':''},
-                {'name':'column[3]','type':'str','value':''},
-                {'name':'column[4]','type':'str','value':''},
-                {'name':'column[5]','type':'str','value':''},
-                {'name':'column[6]','type':'str','value':''},
-                {'name':'column[7]','type':'str','value':''},
-                {'name':'=end'} ]
-
-class ICMParams(QWidget):
-#    def __init__(self):
-#        super(ICMParams,self).__init__()
-#        
-#        self._create_params()
-#        self._create_tabs()
-#        self._create_checkboxes()
-#        
-#        win = QWidget()
-#        layout = QGridLayout()
-#        #layout = QVBoxLayout()
-#        self.setLayout(layout)
-#        #layout.addWidget(QLabel("ICM Parameter"))
-#        layout.addWidget(self._MASTER_t,0,0,1,1)
-##        layout.addWidget(QHor)
-#        layout.addLayout(self._check_grid,2,0,1,1)
-#        layout.addWidget(self.tabs)
-##        layout.addWidget(self._COM1_t,2,0,1,1)
-#
-#        win.show()
-#        win.resize(350,550)
-#        win.setMinimumHeight(500)
-#        #mainLayout = QVBoxLayout()
-        
-        
-    def __init__(self):
+class ICMParams(QWidget):        
+    def __init__(self,version='1.0.0'):
         super(ICMParams,self).__init__()
         
+        self._import_params(version)
         self._create_params()
+        self._create_master()
         self._create_tabs()
         self._create_checkboxes()
+        self._display()
+        ver = {'MASTER':{'Firmware Version':version}}
         
+        
+        t = self._MASTER_p.children()
+        t[0]['Firmware Version'] = version
+         
+        self._set_statechanged()
+
+    def _display(self):
         
         vbox = QVBoxLayout()
         
         master = QFrame()
         master.setFrameShape(QFrame.StyledPanel)
-        #master.setLayout(self._MASTER_t)
+
         buttons = QFrame()
         buttons.setFrameShape(QFrame.StyledPanel)
+        
         
         com = QFrame()
         com.setFrameShape(QFrame.StyledPanel)
     
+        splitter1 = QSplitter(Qt.Vertical)
+        splitter1.addWidget(self._MASTER_t)
+        #splitter1.setMinimumHeight(100)
+        splitter1.setMinimumSize(250,100)
+        splitter1.resize(splitter1.sizeHint())
+        
+        splitter2 = QSplitter(Qt.Vertical)
+        splitter2.addWidget(self.grid)
+        #splitter2.setMinimumHeight(75)
+        splitter2.setMinimumSize(250,75)
+        
+        splitter3 = QSplitter(Qt.Vertical)
+        splitter3.addWidget(self.tabs)
+        splitter3.resize(splitter3.sizeHint())
+
+        
         self.splitter = QSplitter(Qt.Vertical)
-        #self.splitter.addWidget(master)
-        self.splitter.addWidget(self._MASTER_t)
-        self.splitter.addWidget(self.grid)
-        #self.splitter.addWidget(self.)
-        self.splitter.addWidget(self.tabs)
+        self.splitter.addWidget(splitter1)
+        self.splitter.addWidget(splitter2)
+        self.splitter.addWidget(splitter3)
         
         vbox.addWidget(self.splitter)
+        #vbox.addWidget(self.splitter2)
+        #vbox.addWidget(self.splitter3)
         self.setLayout(vbox)
         QApplication.setStyle(QStyleFactory.create('Cleanlooks'))
         
-        self.show()
 
-        #win.setMinimumHeight(500)
+
+
+    def _import_params(self,version):
+        if(version == '1.0.0'):
+            self.master_params = []
+            self.com_params = []
+            self.master_params = master_params_1_0_0
+            self.com_params = com_params_1_0_0
+        else:
+            self.master_params = []
+            self.com_params = []
+            self.master_params = master_params_1_0_0
+            self.com_params = com_params_0_0_1
         
         
     def _create_params(self):
         
         ## Create the parameters
-        self._MASTER_p = Parameter.create(name='Master',type='group',children=master_params)
-        self._COM1_p = Parameter.create(name='params',type='group',children=com_params)
-        self._COM2_p = Parameter.create(name='params',type='group',children=com_params)
-        self._COM3_p = Parameter.create(name='params',type='group',children=com_params)
-        
-        ## Set the state changed connections
-        self._MASTER_p.sigTreeStateChanged.connect(self._MASTER_change)
-        self._COM1_p.sigTreeStateChanged.connect(self._COM1_change)
-        self._COM2_p.sigTreeStateChanged.connect(self._COM2_change)
-        self._COM3_p.sigTreeStateChanged.connect(self._COM3_change)
+#        self._MASTER_p = Parameter.create(name='Master',type='group',children=self.master_params)
+        self._MASTER_p = Parameter.create(name='MASTER',type='group',children=self.master_params)
+        self._COM1_p = Parameter.create(name='COM1',type='group',children=self.com_params)
+        self._COM2_p = Parameter.create(name='COM2',type='group',children=self.com_params)
+        self._COM3_p = Parameter.create(name='COM3',type='group',children=self.com_params)
+                
         
         ## Set up the Master Parameter Tree
         self._MASTER_t = ParameterTree()
         self._MASTER_t.setParameters(self._MASTER_p,showTop=False)
         self._MASTER_t.setWindowTitle('MASTER Parameter Tree')
         
-        self.master = QWidget(self._MASTER_t)
-        ## Set up the Master Parameter Tree
+        #self.master = QWidget(self._MASTER_t)
+        #self.master.setMinimumHeight(75)
+        
+        ## Set up the COM1 Parameter Tree
         self._COM1_t = ParameterTree()
         self._COM1_t.setParameters(self._COM1_p,showTop=False)
         self._COM1_t.setWindowTitle('COM1 Parameter Tree')
         
-        ## Set up the Master Parameter Tree
+        ## Set up the COM2 Parameter Tree
         self._COM2_t = ParameterTree()
         self._COM2_t.setParameters(self._COM2_p,showTop=False)
         self._COM2_t.setWindowTitle('COM2 Parameter Tree')
         
-        ## Set up the Master Parameter Tree
+        ## Set up the COM3 Parameter Tree
         self._COM3_t = ParameterTree()
         self._COM3_t.setParameters(self._COM3_p,showTop=False)
         self._COM3_t.setWindowTitle('COM3 Parameter Tree')
         
+        
+        ## Create the inclusive parameter tree
+        self.system_params = Parameter.create(name='System',type='group')
+        self.system_params.addChild(self._MASTER_p)
+        self.system_params.addChild(self._COM1_p)
+        self.system_params.addChild(self._COM2_p)
+        self.system_params.addChild(self._COM3_p)
+        
+        
+    def _set_statechanged(self):
+                ## Set the state changed connections
+        self._MASTER_p.sigTreeStateChanged.connect(self._MASTER_change)
+        self._COM1_p.sigTreeStateChanged.connect(self._COM1_change)
+        self._COM2_p.sigTreeStateChanged.connect(self._COM2_change)
+        self._COM3_p.sigTreeStateChanged.connect(self._COM3_change)
+        
+    def _create_master(self):
+        mlayout = QHBoxLayout()
+        mlayout.addWidget(self._MASTER_t)
+        self.master = QWidget()
         
     def _create_tabs(self):
         
@@ -159,7 +161,7 @@ class ICMParams(QWidget):
         
         self._check_grid = QGridLayout(self.grid)
 
-        self._check_grid.addWidget(QLabel("Include the following"),0,0,1,1)
+        self._check_grid.addWidget(QLabel("Include the following"),0,0,1,5)
         self._check_grid.addWidget(QLabel("COM1"),1,0)
         self._check_grid.addWidget(QLabel("COM2"),1,1)
         self._check_grid.addWidget(QLabel("COM3"),1,2)
@@ -174,6 +176,27 @@ class ICMParams(QWidget):
         
         
     def _MASTER_change(self):
+        t = self._MASTER_p.children()
+        if t[0]['Firmware Version'].count('.') != 2:
+            return
+        
+        
+        self._COM1_p.clearChildren()
+        self._COM2_p.clearChildren()
+        self._COM3_p.clearChildren()
+        
+        #del self.master_params
+        #del self.com_params
+        self.master_params = []
+        self.com_params = []
+        if(t[0]['Firmware Version'] == '1.0.0'):
+            self._import_params('1.0.0')
+        else:
+            self._import_params('0.0.1')
+        
+        self._create_params()
+        self._display()
+        self.show()
         pass
     def _COM1_change(self):
         pass
@@ -192,7 +215,7 @@ if __name__ == '__main__':
             self.setWindowTitle("ICM Parameter")
             layout = QtGui.QVBoxLayout()
             
-            self.params = ICMParams()
+            self.params = ICMParams('1.0.0')
 
             
             layout.addWidget(self.params)
