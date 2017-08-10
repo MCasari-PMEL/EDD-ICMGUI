@@ -53,7 +53,7 @@ class MainWindow(QtGui.QMainWindow):
         
         self.headerDock = Dock("Description",size=(200,5))
         self.plotDock = Dock("Plot",size=(900,300))
-        self.paramDock = Dock("System Parameters",size=(200,200))
+        self.paramDock = Dock("Parameters",size=(200,200))
         self.fileDock = Dock("Create File",size=(60,25))
         self.serialDock = Dock("Serial Port",size=(60,25))
         self.meatballDock = Dock("PMEL Logo",size=(60,25))
@@ -86,9 +86,13 @@ class MainWindow(QtGui.QMainWindow):
         self.plotDock.addWidget(self.plot)
         
         
-        ## Add System Parameters Widget
-        self.param = ICMParams()
-        self.paramDock.addWidget(self.param)
+        ## Add Device and System Parameters Widget
+        self.dParams = ICMParams()
+        self.sParams = ICMParams()
+        paramTabs = QTabWidget()
+        paramTabs.addTab(self.sParams,'Load Parameters')
+        paramTabs.addTab(self.dParams,'Device Parameters')
+        self.paramDock.addWidget(paramTabs)
         
         
         ## Add Serial Port Widget
@@ -114,7 +118,7 @@ class MainWindow(QtGui.QMainWindow):
         self.connect_buttons()
         
         
-        self.setFixedSize(1200,700)
+        #self.setFixedSize(1200,700)
         
         self.setCentralWidget(self.area)
         
