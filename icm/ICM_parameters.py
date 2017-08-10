@@ -5,14 +5,9 @@ Created on Tue Aug  1 09:43:17 2017
 @author: casari
 """
 
-master_params_1_0_0 = [
-    {'name': 'MASTER','type':'group','children': [
-                                            
-#        {'name':'System','type':'list','values':['Master','COM1','COM2','COM3'],'value':0},
-        {'name': 'System','type':'str','value':'MASTER'},
+master_params_1_0_0 = [{'name': 'System','type':'str','value':'MASTER'},
         {'name':'PMEL Serial Number','type':'str','value':'XXXXXXXXXX'},
-        {'name':'Firmware Version','type':'str','value':'XXXXXXXXXX'}
-        ]} ]
+        {'name':'Firmware Version','type':'str','value':'XXXXXXXXXX'}]
 
 
 com_params_1_0_0 = [   {'name':'Name','type':'str','value':'NAME'},

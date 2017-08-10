@@ -22,46 +22,49 @@ class ICMParams(QWidget):
         
         self._import_params(version)
         self._create_params()
-        self._create_master()
+        #self._create_master()
         self._create_tabs()
         self._create_checkboxes()
         self._display()
         ver = {'MASTER':{'Firmware Version':version}}
         
         
-        t = self._MASTER_p.children()
-        t[0]['Firmware Version'] = version
+        #t = self._MASTER_p.children()
+        #t[0]['Firmware Version'] = version
          
         self._set_statechanged()
 
     def _display(self):
         
         vbox = QVBoxLayout()
-        
-        master = QFrame()
-        master.setFrameShape(QFrame.StyledPanel)
-
-        buttons = QFrame()
-        buttons.setFrameShape(QFrame.StyledPanel)
-        
-        
-        com = QFrame()
-        com.setFrameShape(QFrame.StyledPanel)
+        #vbox.addStretch(0)
+#        master = QFrame()
+#        master.setFrameShape(QFrame.StyledPanel)
+#
+#        buttons = QFrame()
+#        buttons.setFrameShape(QFrame.StyledPanel)
+#        
+#        
+#        com = QFrame()
+#        com.setFrameShape(QFrame.StyledPanel)
     
         splitter1 = QSplitter(Qt.Vertical)
+#        splitter1.addWidget(self.master)
         splitter1.addWidget(self._MASTER_t)
+        
+        
         #splitter1.setMinimumHeight(100)
-        splitter1.setMinimumSize(250,100)
-        splitter1.resize(splitter1.sizeHint())
+        #splitter1.setMinimumSize(250,100)
+        #splitter1.resize(splitter1.sizeHint())
         
         splitter2 = QSplitter(Qt.Vertical)
         splitter2.addWidget(self.grid)
         #splitter2.setMinimumHeight(75)
-        splitter2.setMinimumSize(250,75)
+        #splitter2.setMinimumSize(250,75)
         
         splitter3 = QSplitter(Qt.Vertical)
         splitter3.addWidget(self.tabs)
-        splitter3.resize(splitter3.sizeHint())
+        #splitter3.resize(splitter3.sizeHint())
 
         
         self.splitter = QSplitter(Qt.Vertical)
@@ -103,25 +106,26 @@ class ICMParams(QWidget):
         
         ## Set up the Master Parameter Tree
         self._MASTER_t = ParameterTree()
-        self._MASTER_t.setParameters(self._MASTER_p,showTop=False)
+        self._MASTER_t.setParameters(self._MASTER_p,showTop=True)
         self._MASTER_t.setWindowTitle('MASTER Parameter Tree')
+    
         
         #self.master = QWidget(self._MASTER_t)
         #self.master.setMinimumHeight(75)
         
         ## Set up the COM1 Parameter Tree
         self._COM1_t = ParameterTree()
-        self._COM1_t.setParameters(self._COM1_p,showTop=False)
+        self._COM1_t.setParameters(self._COM1_p,showTop=True)
         self._COM1_t.setWindowTitle('COM1 Parameter Tree')
         
         ## Set up the COM2 Parameter Tree
         self._COM2_t = ParameterTree()
-        self._COM2_t.setParameters(self._COM2_p,showTop=False)
+        self._COM2_t.setParameters(self._COM2_p,showTop=True)
         self._COM2_t.setWindowTitle('COM2 Parameter Tree')
         
         ## Set up the COM3 Parameter Tree
         self._COM3_t = ParameterTree()
-        self._COM3_t.setParameters(self._COM3_p,showTop=False)
+        self._COM3_t.setParameters(self._COM3_p,showTop=True)
         self._COM3_t.setWindowTitle('COM3 Parameter Tree')
         
         
@@ -140,10 +144,11 @@ class ICMParams(QWidget):
         self._COM2_p.sigTreeStateChanged.connect(self._COM2_change)
         self._COM3_p.sigTreeStateChanged.connect(self._COM3_change)
         
-    def _create_master(self):
-        mlayout = QHBoxLayout()
-        mlayout.addWidget(self._MASTER_t)
-        self.master = QWidget()
+#    def _create_master(self):
+#        mlayout = QHBoxLayout()
+#        mlayout.addWidget(self._MASTER_t)
+#        #self.master = QWidget()
+#        self.master = QGroupBox()
         
     def _create_tabs(self):
         
@@ -152,12 +157,16 @@ class ICMParams(QWidget):
         self.tabs.addTab(self._COM2_t,"COM2")
         self.tabs.addTab(self._COM3_t,"COM3")
         
+        self.tabs.setFixedHeight(self.tabs.sizeHint().height())
+        #self.tabs.setMinimumSize(self.tabs.sizeHint())
+        
     def _create_checkboxes(self):
         self._COM1_check = QCheckBox()
         self._COM2_check = QCheckBox()
         self._COM3_check = QCheckBox()
         
         self.grid = QWidget()
+        
         
         self._check_grid = QGridLayout(self.grid)
 
@@ -174,6 +183,10 @@ class ICMParams(QWidget):
         self._check_grid.setColumnMinimumWidth(2,5)
         self._check_grid.setColumnMinimumWidth(3,5)
         
+        
+        ## Fix the height of the checkbox widget
+        self.grid.setFixedHeight(self.grid.sizeHint().height())
+
         
     def _MASTER_change(self):
         t = self._MASTER_p.children()
@@ -226,7 +239,7 @@ if __name__ == '__main__':
 
             self.setCentralWidget(widget)
         
-            self.setGeometry(200,200,400,550)
+            #self.setGeometry(200,200,400,550)
 
     app = QtGui.QApplication(sys.argv)
     
