@@ -30,18 +30,20 @@ class Graph(QWidget):
         self._change_i_Features()
         self._change_s_Features()
             
+        self._create_splitter()
+        self.setLayout(self.splitter)
         #mainLayout = QVBoxLayout()
-        mainLayout = QGridLayout()
-        mainLayout.addWidget(self.win,0,0,5,5)
-        mainLayout.addLayout(self.iFeatureLayout,0,5,1,1)
-        mainLayout.addLayout(self.sFeatureLayout,1,5,1,1)
-        #mainLayout.setColumnMinimumWidth(5,80)
-        mainLayout.setColumnStretch(5,1)
+#        mainLayout = QGridLayout()
+#        mainLayout.addWidget(self.win,0,0,5,5)
+#        mainLayout.addLayout(self.iFeatureLayout,0,5,1,1)
+#        mainLayout.addLayout(self.sFeatureLayout,1,5,1,1)
+#        #mainLayout.setColumnMinimumWidth(5,80)
+#        mainLayout.setColumnStretch(5,1)
+#        
+#        
+#        mainLayout.addWidget(self.clearButton,4,5,2,2)
         
-        
-        mainLayout.addWidget(self.clearButton,4,5,2,2)
-        
-        self.setLayout(mainLayout)
+#        self.setLayout(mainLayout)
         self.show()
         
         
@@ -70,8 +72,11 @@ class Graph(QWidget):
             
             
     def _addCurveFeatures(self,iVars,sVars):
-        self.iFeatureLayout = QGridLayout()
-        self.sFeatureLayout = QGridLayout()
+        
+        self._iFeature = QWidget()
+        self._sFeature = QWidget()
+        self.iFeatureLayout = QGridLayout(self._iFeature)
+        self.sFeatureLayout = QGridLayout(self._sFeature)
         
         mainFont = QFont('Serif',14)
         
@@ -116,6 +121,20 @@ class Graph(QWidget):
             self.sFeatureLayout.addWidget(self._sFeatureColor[i],i+1,3,1,1)
             self.sFeatureLayout.addWidget(QLabel("Color"),i+1,4,1,1)
             
+            
+        ## Create a splitter to capture both features
+        self._featureSplitter = QWidget()
+        featureSplitter = QVBoxLayout(self._featureSplitter)
+        iSplitter = QSplitter()
+        sSplitter = QSplitter()
+        
+        iSplitter.addWidget(self._iFeature)
+        sSplitter.addWidget(self._sFeature)
+        
+        featureSplitter.addWidget(iSplitter)
+        featureSplitter.addWidget(sSplitter)
+        
+            
         self.iFeatureLayout.minimumSize()
     def _addClearButton(self):
         self.clearButton = QPushButton('Clear Data/Graph',self)
@@ -141,6 +160,22 @@ class Graph(QWidget):
             sColor = self._sFeatureColor[i].color()
             sWidth = self._sFeatureWidth[i].value()
             self.sCurve[i].setPen(color=sColor,width=sWidth)
+            
+    def _create_splitter(self):
+        self.splitter = QHBoxLayout()
+        self.splitter1 = QSplitter()
+        
+        self.splitter2 = QSplitter()
+        
+        self.splitter1.addWidget(self.win)
+        #self.splitter2.addWidget(self.win)
+#        self.splitter2.addWidget(self.iFeature)
+        
+        self.splitter.addWidget(self.splitter1)
+        self.splitter.addWidget(self._featureSplitter)
+        
+        
+    
         
     def clearData(self):
         ## Delete the data and set the curve
@@ -175,5 +210,5 @@ if __name__ == '__main__':
         print(e)
         
         Graph.show()
-        sys.exit(app.exec_() )
-#sys.exit(Graph.exec_())
+    sys.exit(app.exec_() )
+    #sys.exit(Graph.exec_())

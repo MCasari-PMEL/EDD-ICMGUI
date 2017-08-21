@@ -24,7 +24,7 @@ from pprint import pprint
 from ui_parameter import *
 from ui_serial import *
 from ui_createfile import *
-from ui_plot import *
+from ui_plot2 import *
 from ICM_file_support import *
 
 
