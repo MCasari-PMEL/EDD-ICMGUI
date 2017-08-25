@@ -93,6 +93,14 @@ def parseICMFile(icm,parameters):
 
     return parameters
 
+
+
+
+def parseConfigFile(parameters,file):
+    pass
+
+
+
 """ Generate ICM File
 Takes the parameters for the ICM file and creates a text file.
 
@@ -124,6 +132,10 @@ def deleteICMFile(file):
         
     except:
         pass
+
+
+def populateICMParametersFromJSON(file):
+    
 
 
 def parseICMParameters(parameters):
@@ -174,6 +186,10 @@ def parseICMParameters(parameters):
             
         #print(content)
     return content
+
+
+
+
 """ Generate ICM File
 Takes the parameters for the ICM file and creates a text file.
 

@@ -27,24 +27,16 @@ class ICMParams(QWidget):
     
          
         self._set_statechanged()
+        
+    def UpdateParams(filecontents):
+        ## 
 
     def _display(self):
         
         vbox = QVBoxLayout()
 
         splitter1 = QSplitter(Qt.Vertical)
-#        splitter1.addWidget(self._MASTER_t)
         splitter1.addWidget(self.master)
-        #splitter1.setMaximumHeight(splitter1.sizeHint().height())
-        #splitter1.setBaseSize(25,60)
-#        minHeight = len(self._MASTER_p.getValues())
-##        minHeight = minHeigth + 1
-#        minHeight = minHeight * 25
-#        maxHeight = minHeight + 100
-#        splitter1.setMinimumHeight(minHeight)
-#        splitter1.setMaximumHeight(maxHeight)
-        #splitter1.setFixedHeight(maxHeight)
-        #splitter1.setFixedHeight((len(self._MASTER_p.getValues())+1) * 15)
         
         splitter2 = QSplitter(Qt.Vertical)
         splitter2.addWidget(self.grid)

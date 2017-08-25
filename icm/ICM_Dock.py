@@ -24,7 +24,7 @@ from pprint import pprint
 from ui_parameter import *
 from ui_serial import *
 from ui_createfile import *
-from ui_plot2 import *
+from ui_plot import *
 from ICM_file_support import *
 
 
@@ -229,9 +229,12 @@ if __name__ == '__main__':
         win = MainWindow()
 
         #win.setCentralWidget(area)
-        win.resize(120,70)
+        #win.resize(120,70)
         #win.resize(win.area.sizeHint())
         #win.resize(Q)
+        
+        win.resize(1280,720)
+        
         win.setWindowTitle('ICM Interface')
 
         win.show()
