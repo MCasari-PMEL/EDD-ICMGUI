@@ -647,19 +647,53 @@ class ICMParam():
         Raises:
             ValueError: Invalid valueS
         """   
+        ## Create the dict used to populate the JSON data
         
         data = dict()
-        data['MASTER']=self.master.__dict__
+        master = [[],[],[]]
+
+        
+        ## Add the Master fields
+        master[0] = {'name': 'System','type':'str','value':'MASTER'}
+        master[1] = {'name':'PMEL Serial Number','type':'str','value':'XXXXXXXXXX'}
+        master[2] = {'name':'Firmware Version','type':'str','value':'XXXXXXXXXX'}
+        
+        data['MASTER'] = master
+        
+        ## Iterate through COMs and add fields to data
         for i in range(0,self._numCom):
-            comStr = "COM"+str(i+1)
-            data[comStr]=self.com[i].__dict__
-        
-       # jsonData = json.dumps(data)
-        
-        
+            c = self._add_com_param_to_object(i)
+            data['COM{}'.format(i+1)] = c
+                
         return data
-        #return jsonData
+
+
+    def _add_com_param_to_object(self,comNum):
     
+        com = []
+        
+        com.append({'name':'Name','type':'str','value':self.com[comNum].name})
+        com.append({'name':'Prefix','type':'str','value':self.com[comNum].prefix})
+        com.append({'name':'Serial Port','type':'str','value':self.com[comNum].serial})
+        com.append({'name':'Baud Rate','type':'list',
+                    'values':['1200','2400','4800','9600','19200','28800','57600','115200'],
+                    'value':self.com[comNum].baud})
+        com.append({'name':'Warmup Time','type':'int','value':self.com[comNum].warmup})
+        com.append({'name':'Sample Start Time','type':'str','value':self.com[comNum].samplestart})
+        com.append({'name':'Sample Interval','type':'str','value':self.com[comNum].sampleinterval})
+        com.append({'name':'Sample Period','type':'str','value':self.com[comNum].sampleperiod})
+        com.append({'name':'Sample Rate','type':'int','value':self.com[comNum].samplerate})
+        com.append({'name':'Power Switch','type':'int','value':self.com[comNum].powerswitch})
+        com.append({'name':'Command','type':'str','value':self.com[comNum].command})
+        if(self.com[comNum].command == '1'):
+            com.append({'name':'cmd','type':'str','value':self.com[comNum].cmd})
+            com.append({'name':'header','type':'str','value':self.com[comNum].header})
+            com.append({'name':'format','type':'str','value':self.com[comNum].format})
+            for i in range(0,len(self.com[comNum].column)):
+                com.append({'name':'column[{}]'.format(i),'type':'str','value':''})
+        com.append({'name':'=end'})
+    
+        return com
     
     
     
@@ -703,6 +737,7 @@ def icm_txt_to_json(filepath,overwrite=True):
     if(overwrite==False):
         if(os.path.exists(jfilepath)==True):
             raise IOError('JSON File already exists')
+
     
     ## Generate the JSON data
     jsonData = param.generate_JSON()
@@ -765,7 +800,7 @@ if __name__ == "__main__":
                 pass
             elif(k=='column'):
                 for item in v:
-                    print(k,'=',item)
+                    print(k,'=',item,sep="")
             else:
-                    print(k,'=',v)
+                    print(k,'=',v,sep="")
         print('=end')
