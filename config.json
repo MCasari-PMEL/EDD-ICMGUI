@@ -1,25 +1,36 @@
 {
 	"ICMConfigs": [
 		{
-			"name": "Rain Gauge (RAIN)"
+			"name" : "Blank Workbook (DEFAULT)",
+			"file" : "DEFAULT.json"
 		},
 		{
-			"name": "Wind Sensor (WIND)"
+			"name": "Rain Gauge (RAIN)",
+			"file": "RAIN.json"
+		},
+		{
+			"name": "Wind Sensor (WIND)",
+			"file": "WIND.json"
 		},
 		{ 
-			"name" : "Load Cell (LOAD)"
+			"name" : "Load Cell (LOAD)",
+			"file" : "LOAD.json"
 		},
 		{
-			"name" : "Long Wave (PIR)"
+			"name" : "Long Wave (PIR)",
+			"file" : "PIR.json"
 		},
 		{
-			"name" : "Short Wave (SPP)"
+			"name" : "Short Wave (SPP)",
+			"file" : "SPP.json"
 		},
 		{
-			"name" : "Inductive Modem Module(IMM)"
+			"name" : "Inductive Modem Module(IMM)",
+			"file" : "IMM.json"
 		},
 		{
-			"name" : "Serial Data Logger (SDL)"
+			"name" : "Serial Data Logger (SDL)",
+			"file" : "SDL.json"
 		}
 	]
 }

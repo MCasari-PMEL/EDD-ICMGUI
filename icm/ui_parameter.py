@@ -8,14 +8,14 @@ from pyqtgraph import GraphicsLayoutWidget
 
 from ICM_parameters import *
 import pyqtgraph as pg
-import sys, os, glob
+import sys, os, glob, json
  
 
 class ICMParams(QWidget):        
     def __init__(self,version='1.0.0'):
         super(ICMParams,self).__init__()
         
-        self._import_params(version)
+        self._import_params()
         self._create_params()
         self._create_param_tree()
         self._create_master()
@@ -30,7 +30,7 @@ class ICMParams(QWidget):
         
     def UpdateParams(filecontents):
         ## 
-
+        pass
     def _display(self):
         
         vbox = QVBoxLayout()
@@ -59,27 +59,30 @@ class ICMParams(QWidget):
 
 
 
-    def _import_params(self,version):
-        if(version == '1.0.0'):
-            self.master_params = []
-            self.com_params = []
-            self.master_params = master_params_1_0_0
-            self.com_params = com_params_1_0_0
-        else:
-            self.master_params = []
-            self.com_params = []
-            self.master_params = master_params_1_0_0
-            self.com_params = com_params_0_0_1
-            
- 
+    def _import_params(self,name="Default"):
+        curdir = os.getcwd()
+        os.chdir('..')
+        path = os.path.join(os.getcwd(),'sensors')
+        jpath = os.path.join(path,'json')
+        jfile = os.path.join(jpath,name+".json")
+        
+        os.chdir(curdir)
+        
+        ## Import JSON file
+        with open(jfile,encoding='utf-8') as json_data: 
+            d = json.load(json_data)
+        
+        self.master_params = d['MASTER']
+        self.com_params = d['COM']
+        return
         
     def _create_params(self):
         
         ## Create the parameters
         self._MASTER_p = Parameter.create(name='MASTER',type='group',children=self.master_params)
-        self._COM1_p = Parameter.create(name='COM1',type='group',children=self.com_params)
-        self._COM2_p = Parameter.create(name='COM2',type='group',children=self.com_params)
-        self._COM3_p = Parameter.create(name='COM3',type='group',children=self.com_params)
+        self._COM1_p = Parameter.create(name='COM1',type='group',children=self.com_params['COM1'])
+        self._COM2_p = Parameter.create(name='COM2',type='group',children=self.com_params['COM2'])
+        self._COM3_p = Parameter.create(name='COM3',type='group',children=self.com_params['COM3'])
                 
     
         ## Create the inclusive parameter tree
@@ -105,9 +108,6 @@ class ICMParams(QWidget):
         self._COM3_t = ParameterTree()
         self._COM3_t.setParameters(self._COM3_p,showTop=True)
         self._COM3_t.setWindowTitle('COM3 Parameter Tree')
-        
-        
-
         
         
     def _set_statechanged(self):
@@ -172,6 +172,16 @@ class ICMParams(QWidget):
         self._check_grid.setColumnMinimumWidth(3,5)
         
         
+        ## Add connect to checkboxes
+        self._COM1_check.clicked.connect(lambda state,x=0:self._check_COM_clicked(state,x))
+        self._COM2_check.clicked.connect(lambda state,x=1:self._check_COM_clicked(state,x))
+        self._COM3_check.clicked.connect(lambda state,x=2:self._check_COM_clicked(state,x))
+        
+        ## Set Checked
+        self._COM1_check.setChecked(True)
+        self._COM2_check.setChecked(True)
+        self._COM3_check.setChecked(True)
+
         ## Fix the height of the checkbox widget
         self.grid.setFixedHeight(self.grid.sizeHint().height())
 
@@ -200,12 +210,15 @@ class ICMParams(QWidget):
         self.show()
         pass
     def _COM1_change(self):
-        pass
+        print("COM1")
     def _COM2_change(self):
-        pass
+        print("COM2")
     def _COM3_change(self):
-        pass
-
+        print("COM3")
+        
+    def _check_COM_clicked(self,state,x):
+        self.tabs.setTabEnabled(x,state)
+        
 # Start Qt event loop unless running in interactive mode or using pyside.
 if __name__ == '__main__':
     class MainWindow(QtGui.QMainWindow):

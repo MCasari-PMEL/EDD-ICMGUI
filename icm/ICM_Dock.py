@@ -118,7 +118,7 @@ class MainWindow(QtGui.QMainWindow):
         self.meatball.addWidget(pic, row=0, col=0)
         self.meatballDock.addWidget(self.meatball)
         self.meatballDock.hideTitleBar()
-        
+      
         
         self.connect_buttons()
         
@@ -164,7 +164,7 @@ class MainWindow(QtGui.QMainWindow):
         ## Populate the ICM menu
         for item in self.config['ICMConfigs']:
             icmAct = QAction(item['name'],self)
-            icmAct.triggered.connect( lambda checked,name=item['name']:self._read_param_file(name))
+            icmAct.triggered.connect( lambda checked,name=item['file']:self._read_param_file(name))
             icmMenu.addAction(icmAct)
 
             
@@ -189,7 +189,7 @@ class MainWindow(QtGui.QMainWindow):
             <br>
             Created by Matthew Casari<br>
             <br>
-            For bugs and feature requests, pleasge go to the PMEL Github Webpage.
+            For bugs and feature requests, please go to the PMEL Github Webpage.
             
             
             """

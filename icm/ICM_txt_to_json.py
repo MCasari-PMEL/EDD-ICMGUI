@@ -660,11 +660,13 @@ class ICMParam():
         
         data['MASTER'] = master
         
+        com = dict()
         ## Iterate through COMs and add fields to data
         for i in range(0,self._numCom):
             c = self._add_com_param_to_object(i)
-            data['COM{}'.format(i+1)] = c
+            com['COM{}'.format(i+1)] = c
                 
+        data['COM'] = com
         return data
 
 
@@ -683,9 +685,9 @@ class ICMParam():
         com.append({'name':'Sample Interval','type':'str','value':self.com[comNum].sampleinterval})
         com.append({'name':'Sample Period','type':'str','value':self.com[comNum].sampleperiod})
         com.append({'name':'Sample Rate','type':'int','value':self.com[comNum].samplerate})
-        com.append({'name':'Power Switch','type':'int','value':self.com[comNum].powerswitch})
-        com.append({'name':'Command','type':'str','value':self.com[comNum].command})
-        if(self.com[comNum].command == '1'):
+        com.append({'name':'Power Switch','type':'list','values':{"OFF":0,"ON":1},'value':self.com[comNum].powerswitch})
+        com.append({'name':'Command','type':'list','values':{"N":0,"Y":1},'value':self.com[comNum].command})
+        if(self.com[comNum].command == 1):
             com.append({'name':'cmd','type':'str','value':self.com[comNum].cmd})
             com.append({'name':'header','type':'str','value':self.com[comNum].header})
             com.append({'name':'format','type':'str','value':self.com[comNum].format})

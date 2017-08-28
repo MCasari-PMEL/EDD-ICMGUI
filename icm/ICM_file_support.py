@@ -135,7 +135,7 @@ def deleteICMFile(file):
 
 
 def populateICMParametersFromJSON(file):
-    
+    pass
 
 
 def parseICMParameters(parameters):
