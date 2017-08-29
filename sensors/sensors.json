@@ -1,0 +1,26 @@
+{
+	"ICMConfigs": [
+		{
+			"name": "Rain Gauge (RAIN)"
+		},
+		{
+			"name": "Wind Sensor (WIND)"
+		},
+		{ 
+			"name" : "Load Cell (LOAD)"
+		},
+		{
+			"name" : "Long Wave (PIR)"
+		},
+		{
+			"name" : "Short Wave (SPP)"
+		},
+		{
+			"name" : "Inductive Modem Module(IMM)"
+		},
+		{
+			"name" : "Serial Data Logger (SDL)"
+		}
+	]
+}
+
