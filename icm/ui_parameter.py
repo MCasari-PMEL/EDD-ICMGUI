@@ -28,9 +28,23 @@ class ICMParams(QWidget):
          
         self._set_statechanged()
         
-    def UpdateParams(filecontents):
-        ## 
-        pass
+    def UpdateParams(self,filename):
+        ## Check to see if it is a valid file
+        cwd = os.getcwd()
+        os.chdir('..')
+        jfile = filename + ".json"
+        filepath = os.path.join(os.getcwd(),'sensors')
+        filepath = os.path.join(filepath,'json')
+        filepath = os.path.join(filepath,jfile)
+        os.chdir(cwd)
+        if(os.path.exists(filepath)==False):
+            raise IOError('File Not Found')
+            return
+        
+        self._import_params(filename)
+        
+        
+        
     def _display(self):
         
         vbox = QVBoxLayout()
@@ -184,6 +198,12 @@ class ICMParams(QWidget):
 
         ## Fix the height of the checkbox widget
         self.grid.setFixedHeight(self.grid.sizeHint().height())
+        
+    def disable_checkboxes(self,value=True):
+        self._COM1_check.setDisabled(value)
+        self._COM2_check.setDisabled(value)
+        self._COM3_check.setDisabled(value)
+        return
 
         
     def _MASTER_change(self):
@@ -230,7 +250,7 @@ if __name__ == '__main__':
             layout = QtGui.QVBoxLayout()
             
             self.params = ICMParams('1.0.0')
-
+            self.params.disable_checkboxes(True)
             
             layout.addWidget(self.params)
 

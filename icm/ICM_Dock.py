@@ -91,6 +91,7 @@ class MainWindow(QtGui.QMainWindow):
         ## Add Device and System Parameters Widget
         self.dParams = ICMParams()
         self.sParams = ICMParams()
+        self.dParams.disable_checkboxes(True)        
         
         self.sParamDock.addWidget(self.sParams)
         self.dParamDock.addWidget(self.dParams)
@@ -174,12 +175,26 @@ class MainWindow(QtGui.QMainWindow):
         helpMenu.triggered.connect(self.help)
         
     def _read_param_file(self,index):
-        print(index)
+        try:
+            self.sParams.UpdateParams(index)
+        except IOError:
+            print("File Not Found")
+            self.errorMsg('File')
         #icmMenu.addMenu('Test')
     def connect_buttons(self):
         
         self.file_.port_btn.clicked.connect(self.save_file)
         
+    def errorMsg(self,value):
+        if(value == 'File'):
+            message = "Inavlid File"
+            
+        msgBox = QMessageBox()
+        msgBox.setWindowTitle("Error")
+        msgBox.setTextFormat(Qt.RichText)
+        msgBox.setText(message)
+        msgBox.setStandardButtons(QMessageBox.Ok)
+        msgBox.exec_()
     
     def help(self):
         #print("Help")
