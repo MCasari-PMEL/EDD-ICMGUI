@@ -42,8 +42,21 @@ class ICMParams(QWidget):
             return
         
         self._import_params(filename)
+        self._refresh_params()
         
         
+    def _refresh_params(self):
+        self._create_params()
+        self._MASTER_t.clear()
+        self._COM1_t.clear()
+        self._COM2_t.clear()
+        self._COM3_t.clear()
+        self._MASTER_t.addParameters(self._MASTER_p)
+        self._COM1_t.addParameters(self._COM1_p)
+        self._COM2_t.addParameters(self._COM2_p)
+        self._COM3_t.addParameters(self._COM3_p)
+        self._set_statechanged()
+        QApplication.processEvents()
         
     def _display(self):
         
@@ -123,14 +136,21 @@ class ICMParams(QWidget):
         self._COM3_t.setParameters(self._COM3_p,showTop=True)
         self._COM3_t.setWindowTitle('COM3 Parameter Tree')
         
-        
+    def _update_param_tree(self):
+        self._COM1_t.clear()
+        self._COM2_t.clear()
+        self._COM3_t.clear()
+        self._COM1_t.addParameters(self._COM1_p)
+        self._COM2_t.addParameters(self._COM2_p)
+        self._COM3_t.addParameters(self._COM3_p)
+        QApplication.processEvents()
     def _set_statechanged(self):
         ## Set the state changed connections
         self._MASTER_p.sigTreeStateChanged.connect(self._MASTER_change)
-        self._COM1_p.sigTreeStateChanged.connect(self._COM1_change)
-        self._COM2_p.sigTreeStateChanged.connect(self._COM2_change)
-        self._COM3_p.sigTreeStateChanged.connect(self._COM3_change)
-        
+        self._COM1_p.sigTreeStateChanged.connect(self._COM_change)
+        self._COM2_p.sigTreeStateChanged.connect(self._COM_change)
+        self._COM3_p.sigTreeStateChanged.connect(self._COM_change)
+      
         
     def _create_master(self):       
         ## Set up the Master Parameter Tree
@@ -205,36 +225,159 @@ class ICMParams(QWidget):
         self._COM3_check.setDisabled(value)
         return
 
-        
-    def _MASTER_change(self):
-        t = self._MASTER_p.children()
-        if t[0]['Firmware Version'].count('.') != 2:
-            return
-        
-        
-        self._COM1_p.clearChildren()
-        self._COM2_p.clearChildren()
-        self._COM3_p.clearChildren()
-        
-        #del self.master_params
-        #del self.com_params
-        self.master_params = []
-        self.com_params = []
-        if(t[0]['Firmware Version'] == '1.0.0'):
-            self._import_params('1.0.0')
-        else:
-            self._import_params('0.0.1')
-        
-        self._create_params()
-        self._display()
-        self.show()
+    def disable_parameters(self,value=True):
         pass
-    def _COM1_change(self):
-        print("COM1")
-    def _COM2_change(self):
-        print("COM2")
-    def _COM3_change(self):
-        print("COM3")
+#        self._COM1_p.unblockTreeChangeSignal()
+#        self._COM2_p.unblockTreeChangeSignal()
+#        self._COM3_p.unblockTreeChangeSignal()
+#        
+#        for item in self._COM1_p.names:
+#            self._COM1_p[item].setEnabled(False)
+#        self._COM1_p.setReadonly(True)
+#        self._COM1_p.setOpts(readonly=True)
+#        self._update_param_tree()
+#        QApplication.processEvents()
+        
+    def _update_com_param_dict(self,params):
+        temp = []
+        columnCnt = 0
+        idx = 0
+        hasCommand = 0
+        for items in params:
+            #temp.append(items)
+            if(items.name() == 'Name'):
+                temp.append({'name':'Name','type':'str','value':items.value()})
+                if(self._valid_name(items.value())==False):
+                    temp[-1]['value'] = "NAME"
+            elif(items.name() == 'Prefix'):
+                temp.append({'name':'Prefix','type':'str','value':items.value()})
+                if(self._valid_prefix(items.value())==False):
+                     temp[-1]['value'] = "Prefix"
+            elif(items.name() == 'Serial Port'):
+                temp.append({'name':'Serial Port','type':'str','value':items.value()})
+                if(self._valid_serialport(items.value())==False):
+                     temp[-1]['value'] = 0
+            elif(items.name() == 'Baud Rate'):
+                temp.append({'name':'Baud Rate','type':'list',
+                'values':['1200','2400','4800','9600','19200','28800','57600','115200'],
+                'value':int(items.value())})
+                
+                if(self._valid_baudrate(items.value())==False):
+                     temp[-1]['value'] = 9600
+            elif(items.name() == 'Warmup Time'):
+                temp.append({'name':'Warmup Time','type':'int','value':items.value()})
+                if(self._valid_warmup(items.value())==False):
+                     temp[-1]['value'] = 0
+            elif(items.name() == 'Sample Start Time'):
+                temp.append({'name':'Sample Start Time','type':'str','value':items.value()})
+                if(self._valid_samplestart(items.value())==False):
+                     temp[-1]['value'] = "00:00:00"
+            elif(items.name() == 'Sample Interval'):
+                temp.append({'name':'Sample Interval','type':'str','value':items.value()})
+                if(self._valid_sampleinterval(items.value())==False):
+                     temp[-1]['value'] = "00:00:00"
+            elif(items.name() == 'Sample Period'):
+                temp.append({'name':'Sample Period','type':'str','value':items.value()})
+                if(self._valid_sampleperiod(items.value())==False):
+                     temp[-1]['value'] = "00:00:00"
+            elif(items.name() == 'Sample Rate'):
+                temp.append({'name':'Sample Rate','type':'int','value':items.value()})
+                if(self._valid_samplerate(items.value())==False):
+                     temp[-1]['value'] = 1
+            elif(items.name() == 'Power Switch'):
+                temp.append({'name':'Power Switch','type':'list','values':{"OFF":0,"ON":1},'value':items.value()})
+                if(self._valid_powerswitch(items.value())==False):
+                     temp[-1]['value'] = 0
+            elif(items.name() == 'Command'):
+                temp.append({'name':'Command','type':'list','values':{"N":0,"Y":1},'value':items.value()})
+                if(self._valid_command(items.value())==False):
+                     temp[-1]['value'] = 0
+                hasCommand = temp[-1]['value']
+            elif(items.name() == 'cmd'):
+                temp.append({'name':'cmd','type':'str','value':items.value()})
+                if((hasCommand==0) or (self._valid_cmd(items.value())==False)):
+                     temp[-1]['value'] = "NA"
+            elif(items.name() == 'header'):
+                temp.append({'name':'header','type':'str','value':items.value()})
+                if(self._valid_header(items.value())==False):
+                     temp[-1]['value'] = ""
+            elif(items.name() == 'format'):
+                temp.append({'name':'format','type':'str','value':items.value()})
+                if(self._valid_format(items.value())==False):
+                     temp[-1]['value'] = ""
+                columnCnt = len(items.value())
+            elif(items.name().find('column') != -1):
+                temp.append({'name':'column[{}]'.format(idx),'type':'str','value':items.value()})
+                if(idx >= columnCnt):
+                    del(temp[-1])
+                idx += 1
+        for i in range(idx,columnCnt):
+            temp.append({'name':'column[{}]'.format(i),'type':'str','value':""})
+        temp.append({'name':'=end'})
+        return temp 
+
+    def _valid_name(self,name):
+        status = False
+        if(type(name) == str):
+            status = True
+        return status
+    def _valid_prefix(self,prefix):
+        status = False
+        if(type(prefix) == str):
+            status = True
+        return status
+    def _valid_serialport(self,port):
+        status = False
+        if(type(port) == str):
+            if((int(port)>=0) and (int(port)<=255)):
+                status = True;
+        return status
+    def _valid_baudrate(self,baud):
+        status = False
+        if(['1200','2400','4800','9600','19200','28800','57600','115200'].index(baud) >= 0):
+            status = True
+        return status
+    def _valid_warmup(self,warmup):
+        return True
+    def _valid_samplestart(self,start):
+        return True
+    def _valid_sampleinterval(self,interval):
+        return True
+    def _valid_sampleperiod(self,period):
+        return True
+    def _valid_samplerate(self,rate):
+        return True
+    def _valid_powerswitch(self,switch):
+        return True
+    def _valid_command(self,command):
+        return True
+    def _valid_cmd(self,cmd):
+        return True
+    def _valid_header(self,header):
+        return True
+    def _valid_format(self,frmt):
+        return True
+    def _MASTER_change(self):
+        pass
+    def _COM_change(self,com):
+        ## Update COM1
+        temp = self._update_com_param_dict(self._COM1_p)
+        del(self.com_params['COM1'])
+        self.com_params['COM1']=temp
+                       
+        ## Update COM2
+        temp = self._update_com_param_dict(self._COM2_p)
+        del(self.com_params['COM2'])
+        self.com_params['COM2']=temp
+                       
+        ## Update COM3
+        temp = self._update_com_param_dict(self._COM3_p)
+        del(self.com_params['COM3'])
+        self.com_params['COM3']=temp
+                       
+        ## Refresh all params
+        
+        self._refresh_params()
         
     def _check_COM_clicked(self,state,x):
         self.tabs.setTabEnabled(x,state)
@@ -251,7 +394,7 @@ if __name__ == '__main__':
             
             self.params = ICMParams('1.0.0')
             self.params.disable_checkboxes(True)
-            
+            self.params.disable_parameters(True)
             layout.addWidget(self.params)
 
                 

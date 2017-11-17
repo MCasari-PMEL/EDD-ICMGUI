@@ -14,12 +14,12 @@ import serial
 
 
 
-class CreateFileWidget(QWidget):
+class CommandWidget(QWidget):
 
     
 
     def __init__(self,*args,**kwargs):
-        super(CreateFileWidget,self).__init__(*args,**kwargs)
+        super(CommandWidget,self).__init__(*args,**kwargs)
 
 
         layout = QGridLayout()

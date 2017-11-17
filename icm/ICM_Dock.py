@@ -23,7 +23,7 @@ from pprint import pprint
 
 from ui_parameter import *
 from ui_serial import *
-from ui_createfile import *
+from ui_commands import *
 from ui_plot import *
 from ICM_file_support import *
 
@@ -53,19 +53,21 @@ class MainWindow(QtGui.QMainWindow):
         
         self.headerDock = Dock("Description",size=(200,5))
         self.plotDock = Dock("Plot",size=(900,300))
-        self.sParamDock = Dock("System Parameters",size=(200,200))
-        self.dParamDock = Dock("Device Parameters",size=(200,200))
+        self.sParamDock = Dock("Program Parameters",size=(200,200))
+        self.dParamDock = Dock("On-Device Parameters",size=(200,200))
         self.fileDock = Dock("Create File",size=(60,25))
         self.serialDock = Dock("Serial Port",size=(60,25))
         self.meatballDock = Dock("PMEL Logo",size=(60,25))
 
         self.area.addDock(self.headerDock,'top')
         self.area.addDock(self.plotDock,'bottom',self.headerDock)
-        self.area.addDock(self.dParamDock,'right',self.plotDock)
-        self.area.addDock(self.sParamDock,'above',self.dParamDock)
-        self.area.addDock(self.fileDock,'right',self.sParamDock)
+        self.area.addDock(self.fileDock,'left',self.plotDock)
         self.area.addDock(self.serialDock,'bottom',self.fileDock)
         self.area.addDock(self.meatballDock,'bottom',self.serialDock)
+        
+        self.area.addDock(self.dParamDock,'right',self.plotDock)
+        self.area.addDock(self.sParamDock,'above',self.dParamDock)
+        
         
         
         ## Add widgets into each dock
@@ -84,7 +86,8 @@ class MainWindow(QtGui.QMainWindow):
         self.headerDock.hideTitleBar()
         
         ## Add Plot Widget
-        self.plot = Graph(8,2)
+#        self.plot = Graph(8,2)
+        self.plot = Graph(8,8)
         self.plotDock.addWidget(self.plot)
         
         
@@ -92,6 +95,7 @@ class MainWindow(QtGui.QMainWindow):
         self.dParams = ICMParams()
         self.sParams = ICMParams()
         self.dParams.disable_checkboxes(True)        
+        self.dParams.disable_parameters(True)
         
         self.sParamDock.addWidget(self.sParams)
         self.dParamDock.addWidget(self.dParams)
@@ -106,7 +110,7 @@ class MainWindow(QtGui.QMainWindow):
         self.serialDock.addWidget(self.serial)
         
         ## Add Create File
-        self.file_ = CreateFileWidget()
+        self.file_ = CommandWidget()
         self.fileDock.addWidget(self.file_)
         
         ## Add Meatball
@@ -177,15 +181,37 @@ class MainWindow(QtGui.QMainWindow):
     def _read_param_file(self,index):
         try:
             self.sParams.UpdateParams(index)
+            #self.sParams.
         except IOError:
             print("File Not Found")
-            self.errorMsg('File')
+            self._errorMsg('File')
+        QApplication.processEvents()
+        
         #icmMenu.addMenu('Test')
     def connect_buttons(self):
         
-        self.file_.port_btn.clicked.connect(self.save_file)
+        self.file_.port_btn.clicked.connect(self._save_file)
+        self.file_.clear_btn.clicked.connect(self._clear_data)
+        self.file_.retr_btn.clicked.connect(self._retreive_file)
+        self.file_.sdata_btn.clicked.connect(self._sdata)
+        self.file_.idata_btn.clicked.connect(self._idata)
         
-    def errorMsg(self,value):
+    def _sdata(self):
+        print('sdata')
+        pass
+    
+    def _idata(self):
+        print('idata')
+        pass
+    def _retreive_file(self):
+        print('retreive file')
+        pass
+        
+    def _clear_data(self):
+        print('clear data')
+        pass
+        
+    def _errorMsg(self,value):
         if(value == 'File'):
             message = "Inavlid File"
             
@@ -226,7 +252,7 @@ class MainWindow(QtGui.QMainWindow):
         
         
 
-    def save_file(self):
+    def _save_file(self):
         
         params = self.param.system_params.getValues()
         path = os.getcwd()

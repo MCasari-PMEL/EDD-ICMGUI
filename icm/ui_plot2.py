@@ -40,40 +40,23 @@ class Graph(QWidget):
 
 
     def _add_i_plot(self,iVars):
-        self._iCurve = []
-        self._iData = []
-        self._iPlot = []
+#        self._iCurve = []
+#        self._iData = []
+#        self._iPlot = []
         ## Create the and the curves data variables
-        for i in range(0,iVars):
-            self._iData.append(np.array([]))
-            self._iCurve.append(pg.PlotCurveItem([]))
+#        for i in range(0,iVars):
+#            self._iData.append(np.array([]))
+#            self._iCurve.append(pg.PlotCurveItem([]))
 
         self.ipw = pg.PlotWidget()
         self.ipw.setWindowTitle('Testing Testing')
-        self._iPlot.append(self.ipw.plotItem)
-        self._iPlot[0].setLabels(left='axis0')
+#        self._iPlot.append(self.ipw.plotItem)
+#        self._iPlot[0].setLabels(left='axis0')
+#        self._iPlot.append(pg.ViewBox())
 
-        
-        for i in range(1,iVars):
-            self._iPlot.append(pg.ViewBox())
-            if(i == 1):
-                self._iPlot[0].showAxis('right')
-                self._iPlot[0].scene().addItem(self._iPlot[1])
-                self._iPlot[0].getAxis('right').linkToView(self._iPlot[1])
-                self._iPlot[1].setXLink(self._iPlot[0])
-                self._iPlot[0].getAxis('right').setLabel('Axis {}'.format(i))
-            else:
-                axis = pg.AxisItem('right')
-                self._iPlot[0].layout.addItem(axis,2,i+1)
-                self._iPlot[0].scene().addItem(self._iPlot[i])
-                axis.linkToView(self._iPlot[i])
-                self._iPlot[i].setXLink(self._iPlot[0])
-                axis.setZValue(-1000)
-                axis.setLabel('Axis {}'.format(i))
+#        self.ipw
 
-        self._iPlot[0].addItem(self._iCurve[0])
-        for i in range(1,iVars):
-            self._iPlot[i].addItem(self._iCurve[i])
+
 
     def _add_s_plot(self,sVars):
         self._sCurve = []
@@ -88,28 +71,11 @@ class Graph(QWidget):
         self.spw.setWindowTitle('Testing Testing')
         self._sPlot.append(self.spw.plotItem)
         self._sPlot[0].setLabels(left='axis0')
-
+        self._sPlot.append(pg.ViewBox())
         
-        for i in range(1,sVars):
-            self._sPlot.append(pg.ViewBox())
-            if(i == 1):
-                self._sPlot[0].showAxis('right')
-                self._sPlot[0].scene().addItem(self._sPlot[1])
-                self._sPlot[0].getAxis('right').linkToView(self._sPlot[1])
-                self._sPlot[1].setXLink(self._sPlot[0])
-                self._sPlot[0].getAxis('right').setLabel('Axis {}'.format(i))
-            else:
-                axis = pg.AxisItem('right')
-                self._sPlot[0].layout.addItem(axis,2,i+1)
-                self._sPlot[0].scene().addItem(self._sPlot[i])
-                axis.linkToView(self._sPlot[i])
-                self._sPlot[i].setXLink(self._sPlot[0])
-                axis.setZValue(-1000)
-                axis.setLabel('Axis {}'.format(i))
 
-        self._sPlot[0].addItem(self._sCurve[0])
-        for i in range(1,sVars):
-            self._sPlot[i].addItem(self._sCurve[i])
+
+
             
     def _create_splitters(self):
         pass
@@ -134,10 +100,29 @@ class Graph(QWidget):
         self._iData = []
         self._sData = []
     
-    def add_iData(self,curveNum,data):
-        self._iData[curveNum] = np.append(self._iData[curveNum],data)
-        self._iCurve[curveNum].setData(data)
-
+    def add_iData(self,x,data,text):
+        """ Add iData to Plot
+        
+        Takes a numpy array of the form
+        [[a0,a1,a2,...,an],
+         [b0,b1,b2,...,bn],
+         ...
+         [z0,z1,z2,...,zn]]
+        
+        where each letter represents a time series and 0 is the first in the series
+        
+        Args:
+            x (str): Timeseries values for x-axis
+            data: Numpy array (as shown above)
+            text: Text headers for each data series
+        Returns:
+            None
+        
+        """
+        for d in data:
+            self.ipw.addPlot(d)
+            
+            
     def add_sData(self,curveNum,data):
         self._sData[curveNum] = np.append(self._sData[curveNum],data)
         self._sCurve[curveNum].setData(data)
@@ -153,7 +138,12 @@ if __name__ == '__main__':
     idata1 = '@@@3294,gill_b,170622 14:49:00,-0.00,0.0,-0.01,0.1,10\n \
              gill_b,170622 14:51:00,0.10,0.2,0.30,0.4,50'
     
-    data = np.array([1,2,4,8,16,32])
+#    data = np.array([1,2,4,8,16,32])
+    
+    x = np.array(['1','2'])
+    text = ['wind_speed[m/s]','wind_dir[deg]','heading[deg]','pitch[deg]','roll[deg]']
+    
+    data = np.array([[0.218,290,10,0,1.1,1.2],[0.207,310,13,1,1.4,1.5],[0.232,390,16,2,1.7,1.8],[0.128,326,10,3,1.1,1.2]])
     #data = 
 #    try:
     for i in range(0,iLength):

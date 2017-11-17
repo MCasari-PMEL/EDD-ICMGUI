@@ -787,10 +787,11 @@ def _parse_icm_text_file(filetext):
     param = ICMParam(numCOM)
     param.parse_text(filetext)
     return param
-#    for i in range(0,numCOM):
-#        text = param.com[i].__dict__
-#        print(text)
-        #print(param.com[i].__dict__)
+
+
+
+    
+
 if __name__ == "__main__":              
     
     path = 'C:\\Users\\Casari\\version-control\\PMEL\\EDD-ICMGUI\\icm\\Test.txt'
