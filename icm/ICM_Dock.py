@@ -87,7 +87,7 @@ class MainWindow(QtGui.QMainWindow):
         
         ## Add Plot Widget
 #        self.plot = Graph(8,2)
-        self.plot = Graph(8,8)
+        self.plot = Graph(2,4)
         self.plotDock.addWidget(self.plot)
         
         
@@ -261,41 +261,70 @@ class MainWindow(QtGui.QMainWindow):
 
 
 ## Start Qt event loop unless running in interactive mode or using pyside.
+        
+        
+def update():
+#    print("Time's up")
+    global idx,win
+    
+    sdata = [] #np.random.normal(size=4)
+    idata = []
+#    
+    sdata = pd.DataFrame(np.random.randint(0,10,size=[8,4]), columns=['Wind Ave', 'Std', 'Min', 'Max'])
+    idata = pd.DataFrame(np.random.randint(0,100,size=[8,2]), columns=['A','B'])
+    tt = dt.datetime.utcnow()
+    td = dt.timedelta(milliseconds=100)
+    
+
+    
+    xvals = np.array(range(update.counter,update.counter+8))
+#    print(xvals)
+    sdata['timestamp[utc]'] = xvals
+    idata['timestamp[utc]'] = xvals
+    win.plot.add_s_data(sdata)
+    win.plot.add_i_data(idata)
+#    dock.add_i_data(idata)
+    update.counter += 8
+    
 if __name__ == '__main__':
     import sys
-    if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
-        #QtGui.QApplication.instance().exec_()
+    global idx
+    idx = 0
+    app = QtGui.QApplication([])
+    
+    timer = QTimer()
+    timer.timeout.connect(update)
+    timer.start(100)
 
-        app = QtGui.QApplication([])
-        win = MainWindow()
-
-        #win.setCentralWidget(area)
-        #win.resize(120,70)
-        #win.resize(win.area.sizeHint())
-        #win.resize(Q)
-        
-        win.resize(1280,720)
-        
-        win.setWindowTitle('ICM Interface')
-
-        win.show()
-        
-        ## Add some test data
-        iLength = 8
-        sLength = 3
-        data = np.array([1,2,4,8,16,32])
-        try:
-            for i in range(0,iLength):
-                win.plot.add_iData(i,data*(i+1))
-               
-            for i in range(0,sLength):
-                win.plot.add_sData(i,data*(i+1))
-        except Exception as e:
-            print(e)
-
+    win = MainWindow()
 
         
+    win.resize(1280,720)
+    win.setWindowTitle('ICM Interface')
+    win.show()
+    
 
-        sys.exit(app.exec_())
+
+    update.counter = 0
+
+    sys.exit(app.exec_())
+    
+    
+#    if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
+#        #QtGui.QApplication.instance().exec_()
+#
+#        
+#        win = MainWindow()
+#
+#        
+#        win.resize(1280,720)
+#        win.setWindowTitle('ICM Interface')
+#        win.show()
+#        
+#
+#
+#        update.counter = 0
+#
+#        sys.exit(app.exec_())
 
 
