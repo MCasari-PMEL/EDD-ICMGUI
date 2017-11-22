@@ -252,11 +252,21 @@ class Graph(QWidget):
         
 
         
-#    def clear_data(self):
-#        self._iData = []
-#        self._sData = []
-    
-     
+    def clear_data(self):
+        self.idata = pd.DataFrame([])
+        self.sdata = pd.DataFrame([])
+        for idx in range(0,len(self._iCurve)):
+            self._iCurve[idx].setData([],[])
+        for idx in range(0,len(self._sCurve)):
+            self._sCurve[idx].setData([],[])
+    def reset_num_vars(self,svals,ivals):
+        self.num_sVars = svals
+        self.num_iVars = ivals
+        del(self.slegend)
+        del(self.ilegend)
+        self.clear_data()
+        
+        
     def updateViews(self):
         """
         Updates the plots so all curves fit in same area

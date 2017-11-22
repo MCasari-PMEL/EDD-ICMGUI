@@ -123,9 +123,14 @@ class MainWindow(QtGui.QMainWindow):
         self.meatball.addWidget(pic, row=0, col=0)
         self.meatballDock.addWidget(self.meatball)
         self.meatballDock.hideTitleBar()
-      
         
+        ## Connect the button signals
         self.connect_buttons()
+        
+        ## Set the number of vars and sensor type
+        self.icm_type = "None"
+        self.num_sVars = 0
+        self.num_iVars = 0
         
         
         #self.setFixedSize(1200,700)
@@ -181,7 +186,17 @@ class MainWindow(QtGui.QMainWindow):
     def _read_param_file(self,index):
         try:
             self.sParams.UpdateParams(index)
-            #self.sParams.
+            ## Set the graph up for the right number of variables
+            if(index == "Rain Gauge (RAIN)"):
+                self.icm_type = "Rain"
+                self.num_sVars = 8
+                self.num_iVars = 4
+            if(index == "Wind Sensor (WIND)"):
+                self.icm_type = "Wind"
+                self.sParam.num_sVars = 6
+                self.sParam.num_iVars = 4
+                
+            self.plot.reset_num_vars(self.num_sVars,self.num_iVars)
         except IOError:
             print("File Not Found")
             self._errorMsg('File')
@@ -189,7 +204,16 @@ class MainWindow(QtGui.QMainWindow):
         
         #icmMenu.addMenu('Test')
     def connect_buttons(self):
+        """ Button Signal Connects
         
+        Connects button signals to functions
+        
+        Args:
+            None
+        Returns:
+            None
+        
+        """
         self.file_.port_btn.clicked.connect(self._save_file)
         self.file_.clear_btn.clicked.connect(self._clear_data)
         self.file_.retr_btn.clicked.connect(self._retreive_file)
@@ -197,23 +221,100 @@ class MainWindow(QtGui.QMainWindow):
         self.file_.idata_btn.clicked.connect(self._idata)
         
     def _sdata(self):
+        """ Retreive SDATA button function
+        
+        Commands ICM for SDATA, parses response and displays on graph
+        
+        Args:
+            None
+        Returns:
+            None
+        """
         print('sdata')
+        ## ***DEBUG ONLY***
+        update('sdata')
+        ## Send SDATA Command to ICM
+        try:
+            assert(self.serial.serial.is_open == True)
+            self.serial.serial.write(b"SDATA\n")
+        except:
+            self._errorMsg('Port')
+        ## Read the response
+        
+        ## Parse the response
+        
+        ## Display the response
+#        self.plot.add_s_data(data)
         pass
     
     def _idata(self):
+        """ Retreive IDATA button function
+        
+        Commands ICM for IDATA, parses respnose and displays on graph
+        
+        Args:
+            None
+        Returns:
+            None
+        
+        """
         print('idata')
+        ## ***DEBUG ONLY ***
+        update('idata')
+        ## Send IDATA command to ICM
+        try:
+            assert(self.serial.serial.is_open == True)
+            self.serial.serial.write(b"IDATA\n")
+        except:
+            self._errorMsg('Port')
+        ## Read the response
+        
+        ## Parse the response
+        
+        ## Display the response
+#        self.plot.add_i_data(data)
+        
         pass
     def _retreive_file(self):
+        """ Retreive ICM Param File 
+        
+        Command ICM to return Param file, display in parameter chart
+        
+        Args:
+            None
+        Returns:
+            None
+        """
         print('retreive file')
         pass
         
     def _clear_data(self):
+        """ Clear ICM SDATA and IDATA
+        Clears all data from SDATA and IDATA (CANNOT BE RETREIVED)
+        
+        Args:
+            None
+        Returns:
+            None        
+        """
         print('clear data')
+        self.plot.clear_data()
         pass
         
     def _errorMsg(self,value):
+        """ Display Error Message
+        
+        Displays an pop-up error message for selectable invalid command or error
+        
+        Args:
+            value (str): Type of error message to display
+        Returns:
+            None       
+        """
         if(value == 'File'):
-            message = "Inavlid File"
+            message = "Invalid File"
+        if(value == 'Port'):
+            message = "Serial Port Not Open"
             
         msgBox = QMessageBox()
         msgBox.setWindowTitle("Error")
@@ -223,6 +324,15 @@ class MainWindow(QtGui.QMainWindow):
         msgBox.exec_()
     
     def help(self):
+        """ Display the help menu
+        
+        Displays the help menu for the ICM GUI
+        
+        Args:
+            None
+        Returns:
+            None       
+        """
         #print("Help")
         message = """<b>ICM-GUI v{}</b> <br> Interface Control Module Graphical User Interface <br>
             Copyright (c) 2017 NOAA <br>Pacific Marine Environmental Lab <br>
@@ -253,6 +363,14 @@ class MainWindow(QtGui.QMainWindow):
         
 
     def _save_file(self):
+        """ Save parameter file to disk
+        Save the user configurable parameter file to disk (working directory)
+        
+        Args:
+            None
+        Returns:
+            None
+        """
         
         params = self.param.system_params.getValues()
         path = os.getcwd()
@@ -263,28 +381,46 @@ class MainWindow(QtGui.QMainWindow):
 ## Start Qt event loop unless running in interactive mode or using pyside.
         
         
-def update():
+def update(graph='both'):
+    """ Update loop for debugging 
+    ***REMOVE FOR PRODUCTION
+    This loop generates random data for the idata and sdata graphs
+    
+    """
 #    print("Time's up")
     global idx,win
     
-    sdata = [] #np.random.normal(size=4)
-    idata = []
-#    
-    sdata = pd.DataFrame(np.random.randint(0,10,size=[8,4]), columns=['Wind Ave', 'Std', 'Min', 'Max'])
-    idata = pd.DataFrame(np.random.randint(0,100,size=[8,2]), columns=['A','B'])
+    if(graph =='both' or graph == 'sdata'):
+        slen = np.random.randint(1,60)
+    if(graph =='both' or graph == 'idata'):
+        ilen = np.random.randint(1,60)
+
+    ## Create time (x) data
     tt = dt.datetime.utcnow()
     td = dt.timedelta(milliseconds=100)
     
+    if(graph == 'sdata' or graph =='both'):
+        sxvals = np.array(range(update.scounter,update.scounter+slen))
+        update.scounter += slen
+    if(graph == 'idata' or graph == 'both'):
+        ixvals = np.array(range(update.icounter,update.icounter+ilen))
+        update.icounter += ilen
+
+
+    if(graph == 'both' or graph == 'sdata'):
+        sdata = pd.DataFrame(np.random.randint(0,10,size=[slen,4]), columns=['Wind Ave', 'Std', 'Min', 'Max'])
+        sdata['timestamp[utc]'] = sxvals
+        win.plot.add_s_data(sdata)
 
     
-    xvals = np.array(range(update.counter,update.counter+8))
-#    print(xvals)
-    sdata['timestamp[utc]'] = xvals
-    idata['timestamp[utc]'] = xvals
-    win.plot.add_s_data(sdata)
-    win.plot.add_i_data(idata)
-#    dock.add_i_data(idata)
-    update.counter += 8
+    if(graph =='both' or graph == 'idata'):
+        idata = pd.DataFrame(np.random.randint(0,100,size=[ilen,2]), columns=['A','B'])
+        idata['timestamp[utc]'] = ixvals   
+        win.plot.add_i_data(idata)
+
+
+
+    
     
 if __name__ == '__main__':
     import sys
@@ -292,9 +428,10 @@ if __name__ == '__main__':
     idx = 0
     app = QtGui.QApplication([])
     
-    timer = QTimer()
-    timer.timeout.connect(update)
-    timer.start(100)
+    if(False):
+        timer = QTimer()
+        timer.timeout.connect(update)
+        timer.start(500)
 
     win = MainWindow()
 
@@ -304,8 +441,9 @@ if __name__ == '__main__':
     win.show()
     
 
-
     update.counter = 0
+    update.scounter = 0
+    update.icounter = 0
 
     sys.exit(app.exec_())
     
